@@ -62,6 +62,9 @@ class SetTimerActivity : ComponentActivity() {
                 SliderComposable()
             }
             gestureDetector = GestureDetector(this, GestureListener())
+
+
+
         }
     }
 
@@ -113,7 +116,7 @@ fun SliderComposable(){
             valueRange = 1f..30f
 
         )
-        Text(text = "${"%.2f".format(sliderPosition)} minutes")
+        Text(text = "${"%.0f".format(sliderPosition)} minutes")
     }
 
 }

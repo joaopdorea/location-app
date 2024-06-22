@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -38,8 +39,17 @@ import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.wearable.DataMap.TAG
 import com.example.wearosapp.presentation.MyDatabaseHelper
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import java.net.HttpURLConnection
+import java.net.URI
+import java.net.URL
 import java.text.DateFormat
 import java.util.Calendar
+
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
 
 
 class LocationActivity : ComponentActivity() {
@@ -49,6 +59,14 @@ class LocationActivity : ComponentActivity() {
     private var currentLatitude:String = ""
     private var currentLongitude:String = ""
     private var currentDistance:String = ""
+    private var globalCounter = 0
+    private var risk:String= "true"
+    private var name:String = "Maria Lucia"
+    private var category:String = "Person"
+
+    private lateinit var db:FirebaseDatabase
+    private lateinit var reference:DatabaseReference
+
 
 
 
@@ -74,7 +92,6 @@ class LocationActivity : ComponentActivity() {
                 InfoComposable()
             }
         }
-
 
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -166,23 +183,51 @@ class LocationActivity : ComponentActivity() {
                 if(it != null){
 
 
+                    var id = "1"
                     val calendar = Calendar.getInstance().time
                     val dateFormat = DateFormat.getDateInstance().format(calendar)
                     val timeFormat = DateFormat.getTimeInstance().format(calendar)
 
                     val currentDate = "$dateFormat $timeFormat"
 
+                    if(globalCounter == 0) {
+                        currentLatitude = it.latitude.toString()
+                        currentLongitude = it.longitude.toString()
 
-                    currentLatitude = it.latitude.toString()
-                    currentLongitude = it.longitude.toString()
-                    currentDistance = (calculateDistance(it.latitude, -22.90, it.longitude, -43.17)/1000).toString()
 
-                    Log.d(TAG, "Latitude is ${it.latitude}")
-                    Log.d(TAG, "Longitude is ${it.longitude}")
-                    Log.d(TAG, (calculateDistance(it.latitude, -22.90, it.longitude, -43.17)/1000).toString() + " km")
 
-                    val myDB = MyDatabaseHelper(this)
-                    myDB.addEvent(currentDate, currentLatitude, currentLongitude, currentDistance)
+                         var events = Events(id, name, currentDate, currentLatitude, currentLongitude, category, risk)
+
+                        db = FirebaseDatabase.getInstance()
+                        reference = db.getReference("Events")
+
+                        reference.child(id).setValue(events).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+
+                                Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+
+                        globalCounter++
+                    }else{
+                        currentLatitude = (it.latitude + 1).toString()
+                        currentLongitude = (it.longitude + 1.5).toString()
+
+
+
+                        var events = Events(id, name, currentDate, currentLatitude, currentLongitude, category, risk)
+
+                        db = FirebaseDatabase.getInstance()
+                        reference = db.getReference("Events")
+
+                        reference.child(id).setValue(events).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+
+                                Toast.makeText(this, "Successfully Updated", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 }
                 else{
                     Log.d(TAG, "Null location")

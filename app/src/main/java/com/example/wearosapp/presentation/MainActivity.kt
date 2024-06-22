@@ -82,7 +82,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
 @Composable
 fun SwitchComposable() {
     val checkedValue = remember { mutableStateOf(true) }

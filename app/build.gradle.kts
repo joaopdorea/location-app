@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -67,6 +68,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0")
     implementation("androidx.compose.material:material-icons-extended:1.3.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")
+    implementation("org.xerial:sqlite-jdbc:3.34.0")
+    implementation("com.google.firebase:firebase-database:21.0.0")
 
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
